@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Constitution of India Learning Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      /* Colors inspired by Indian flag and traditional elements */
+      --primary-color: #FF9933;
+      /* Deep Saffron */
+      --secondary-color: #138808;
+      /* India Green */
+      --tertiary-color: #000080;
+      /* Navy Blue */
+      --background-color: #FAF5E9;
+      /* Light Cream */
+      --text-color: #2C3E50;
+      --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      --gradient-bg: linear-gradient(135deg, #FF9933, #138808);
+      --correct-color: #138808;
+      --incorrect-color: #B71C1C;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: wheat;
+      background-repeat: repeat;
+      background-opacity: 0.1;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Start Modal Styles */
+    .start-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+    }
+
+    .start-content {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .start-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .player-name-input {
+      padding: 12px;
+      border: 2px solid var(--secondary-color);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .player-name-input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+      outline: none;
+    }
+
+    .instructions {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: left;
+    }
+
+    .instructions h3 {
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    .instructions ul {
+      padding-left: 20px;
+    }
+
+    .instructions li {
+      margin-bottom: 8px;
+    }
+
+    .checkbox-group {
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .start-btn {
+      background: var(--gradient-bg);
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .start-btn:not(:disabled):hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Game Container Styles */
+    .game-container {
+      background-color: white;
+      margin-top: 10px;
+      border-radius: 20px;
+      box-shadow: var(--card-shadow);
+      padding: 30px;
+      display: none;
+    }
+
+    .game-header {
+      background: white;
+      border: 2px solid var(--primary-color);
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-repeat: no-repeat;
+      background-position: right center;
+      background-size: contain;
+    }
+
+    .game-progress {
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .game-progress-container {
+      width: 100%;
+      height: 20px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid var(--primary-color);
+    }
+
+    .game-progress-bar {
+      height: 100%;
+      background: var(--gradient-bg);
+      transition: width 0.5s ease-in-out;
+      text-align: center;
+      color: white;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Add these new styles to your existing CSS */
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 15px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn i {
+      font-size: 1.1em;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn.answered {
+      background-color: #4CAF50;
+      color: white;
+      cursor: not-allowed;
+    }
+
+    .btn.active {
+      background-color: var(--tertiary-color);
+      color: white;
+    }
+
+    .card-input {
+      width: 100%;
+      max-width: 200px;
+      margin: 15px auto;
+      padding: 12px;
+      border: 2px solid var(--secondary-color);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+    }
+
+    .card-input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.2);
+      outline: none;
+    }
+
+    .result {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 20px 0;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .result.correct {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: #4CAF50;
+    }
+
+    .result.incorrect {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: #F44336;
+    }
+
+    /* Card Styles */
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: var(--card-shadow);
+      transition: all 0.3s ease;
+      height: 400px;
+      perspective: 1000px;
+      border: 2px solid var(--secondary-color);
+    }
+
+    .card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+      background-color: #ECFFDC;
+      color: black;
+      border-radius: 15px;
+    }
+
+    .card-title {
+      font-weight: bold;
+      color: var(--primary-color);
+      padding: 10px;
+      background-color: rgba(255, 107, 107, 0.1);
+      border-radius: 10px;
+    }
+
+    .card-body {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      padding: 20px;
+    }
+
+    .card-input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid var(--secondary-color);
+      border-radius: 8px;
+      text-align: center;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .card-input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+      outline: none;
+    }
+
+    /* Button Styles */
+    .btn {
+      padding: 8px 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+    }
+
+    .check-btn {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .info-btn {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Achievement Toast */
+    .achievement-toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--gradient-bg);
+      color: white;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: none;
+      animation: slideIn 0.5s ease-out;
+      z-index: 1000;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+      }
+
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .card-container {
+        grid-template-columns: 1fr;
+      }
+
+      .game-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+    }
+
+    .nav-bar {
+      background: var(--gradient-bg);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-bar button {
+      background: white;
+      color: var(--primary-color);
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .nav-bar button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      flex: 1;
+      height: 350px;
+    }
+
+    .side-panel {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: var(--card-shadow);
+      display: none;
+    }
+
+    .side-panel.active {
+      display: block;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .achievement-card {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .achievement-card.unlocked {
+      background: var(--gradient-bg);
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .card-row {
+        flex-direction: column;
+      }
+
+      .nav-bar {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease-in-out;
+      z-index: 1000;
+    }
+
+    .popup-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 500px;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      z-index: 1001;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .popup.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .close-popup {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--primary-color);
+      transition: transform 0.3s ease;
+    }
+
+    .close-popup:hover {
+      transform: scale(1.1);
+    }
+
+    .popup-content {
+      margin-top: 20px;
+    }
+
+    .timer-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .timer-icon {
+      color: var(--primary-color);
+      font-size: 1.5rem;
+    }
+
+    .timer-text {
+      font-weight: bold;
+      color: var(--text-color);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .timer-warning {
+      color: #FF6B6B;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from {
+        transform: scale(1);
+      }
+
+      to {
+        transform: scale(1.05);
+      }
+    }
+
+    .points-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .points-icon {
+      color: gold;
+      font-size: 1.5rem;
+    }
+
+    .points-text {
+      font-weight: bold;
+      color: var(--text-color);
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .coins-text {
+      font-weight: bold;
+      color: green;
+      min-width: 60px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Start Modal -->
+    <!-- Start Modal -->
+    <div class="start-modal" id="start-modal">
+      <div class="start-content">
+        <h2> Constitution of India Quiz</h2>
+        <div class="start-form">
+          <div class="form-group">
+            <label for="player-name">Enter Your Name:</label>
+            <input type="text" id="player-name" class="player-name-input" placeholder="Your Name" required>
+          </div>
+
+          <div class="instructions">
+            <h3>How to Play:</h3>
+            <ul>
+              <li>Answer questions about the Indian Constitution</li>
+              <li>Enter numerical answers only</li>
+              <li>Get achievements for good performance</li>
+              <li>Track your progress as you play</li>
+            </ul>
+          </div>
+
+          <button class="start-btn" id="start-game-btn">
+            <i class="fas fa-play"></i> Start Quiz
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="game-container" id="game-container">
+      <div class="nav-bar">
+        <h2>Constitution Quiz</h2>
+        <div>
+          <button id="instructions-btn">Instructions</button>
+          <button id="leaderboard-btn">Leaderboard</button>
+          <button id="achievements-btn">Achievements</button>
+        </div>
+      </div>
+      <div class="popup-overlay" id="popup-overlay"></div>
+      <div class="popup" id="popup">
+        <button class="close-popup">&times;</button>
+        <div class="popup-content" id="popup-content"></div>
+      </div>
+
+      <div class="game-header">
+        <div class="timer-container">
+          <i class="fas fa-clock timer-icon"></i>
+          <span class="timer-text" id="game-timer">02:00</span>
+        </div>
+        <div class="points-container">
+          <i class="fas fa-star points-icon"></i>
+          <span class="points-text" id="game-points">0</span>
+          <i class="fas fa-coins points-icon"></i>
+          <span class="coins-text" id="game-coins">0</span>
+        </div>
+        <div class="game-progress">
+          <div class="game-progress-container">
+            <div class="game-progress-bar" id="game-progress-bar">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-row" id="card-container"></div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mysql/2.18.1/mysql.min.js"></script>
+      <script>
+        const cardSets = [
+          [
+            {
+              title: "Article 19",
+              body: "Right to Freedom of Speech",
+              year: 1949,
+              info: "Grants freedom of speech and expression but allows restrictions for public order, decency, and security."
+            },
+            {
+              title: "Article 14",
+              body: "Equality before the Law",
+              year: 1949,
+              info: "Ensures equality before the law and prohibits discrimination by the state, promoting social justice."
+            },
+            {
+              title: "Article 21",
+              body: "Right to Life and Personal Liberty",
+              year: 1949,
+              info: "Protects the right to life and liberty and includes rights to dignity, health, and a clean environment."
+            }
+          ],
+          [
+            {
+              title: "Amendment 42",
+              body: "Added 'Socialist', 'Secular'",
+              year: 1976,
+              info: "Added 'Socialist' and 'Secular' to the Preamble to emphasize social equality and religious neutrality."
+            },
+            {
+              title: "Amendment 44",
+              body: "Repealed Right to Property",
+              year: 1978,
+              info: "Changed Right to Property from a fundamental right to a legal right, enabling land reforms."
+            },
+            {
+              title: "Article 32",
+              body: "Right to Constitutional Remedies",
+              year: 1949,
+              info: "Empowers citizens to approach the Supreme Court directly to enforce fundamental rights."
+            }
+          ]];
+
+        const achievements = {
+          quickLearner: {
+            id: 'quickLearner',
+            title: 'Quick Learner',
+            description: 'Answer 3 questions correctly in a row',
+            unlocked: false
+          },
+          constitutionalExpert: {
+            id: 'constitutionalExpert',
+            title: 'Constitutional Expert',
+            description: 'Complete all sets with 80% accuracy',
+            unlocked: false
+          },
+          speedyScholar: {
+            id: 'speedyScholar',
+            title: 'Speedy Scholar',
+            description: 'Complete a set in under 60 seconds',
+            unlocked: false
+          }
+        };
+
+        class ConstitutionGame {
+          constructor(cardSets) {
+            this.cardSets = cardSets;
+            this.currentSetIndex = 0;
+            this.correctAnswers = 0;
+            this.totalAnswers = 0;
+            this.consecutiveCorrect = 0;
+            this.startTime = null;
+            this.playerName = '';
+            this.achievements = { ...achievements };
+            this.initializeDOM();
+            this.setupEventListeners();
+            this.initializeNavigation();
+            this.timeRemaining = 120;
+            this.timerInterval = null;
+            this.points = 0;
+            this.coins = 0;
+          }
+          startTimer() {
+            const timerElement = document.getElementById('game-timer');
+
+            this.timerInterval = setInterval(() => {
+              this.timeRemaining--;
+
+              // Format time as MM:SS
+              const minutes = Math.floor(this.timeRemaining / 60);
+              const seconds = this.timeRemaining % 60;
+              const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+              timerElement.textContent = formattedTime;
+
+              // Add warning style when time is low
+              if (this.timeRemaining <= 60) {
+                timerElement.classList.add('timer-warning');
+              }
+
+              // End game when time runs out
+              if (this.timeRemaining <= 0) {
+                this.endGame(true);
+              }
+            }, 1000);
+          }
+
+          addTime(seconds) {
+            const timerElement = document.getElementById('game-timer');
+            this.timeRemaining += seconds;
+
+            // Briefly show a "+" animation
+            const plusElement = document.createElement('span');
+            plusElement.textContent = `+${seconds}s`;
+            plusElement.style.color = 'green';
+            plusElement.style.marginLeft = '10px';
+            plusElement.style.animation = 'fadeOut 2s';
+            timerElement.parentElement.appendChild(plusElement);
+
+            setTimeout(() => {
+              plusElement.remove();
+            }, 2000);
+          }
+          initializeDOM() {
+            this.elements = {
+              startModal: document.getElementById('start-modal'),
+              gameContainer: document.getElementById('game-container'),
+              cardContainer: document.getElementById('card-container'),
+              playerNameInput: document.getElementById('player-name'),
+              startButton: document.getElementById('start-game-btn')
+            };
+
+            // Set the start button to enabled by default
+            this.elements.startButton.disabled = false;
+          }
+          initializeNavigation() {
+            // Get DOM elements
+            const popupOverlay = document.getElementById('popup-overlay');
+            const popup = document.getElementById('popup');
+            const popupContent = document.getElementById('popup-content');
+            const closePopupButton = document.querySelector('.close-popup');
+
+            // Function to show popup
+            const showPopup = (content) => {
+              popup.style.display = 'block';
+              popupOverlay.style.display = 'block';
+              popupContent.innerHTML = content;
+              setTimeout(() => {
+                popup.classList.add('active');
+                popupOverlay.classList.add('active');
+              }, 10);
+            };
+
+            // Function to hide popup
+            const hidePopup = () => {
+              popup.classList.remove('active');
+              popupOverlay.classList.remove('active');
+              setTimeout(() => {
+                popup.style.display = 'none';
+                popupOverlay.style.display = 'none';
+              }, 300);
+            };
+
+            // Button click handlers
+            document.getElementById('instructions-btn').addEventListener('click', () => {
+              showPopup(`
+            <h2 style="color: var(--primary-color); margin-bottom: 20px;">Instructions</h2>
+            <ul style="list-style-type: none; padding: 0;">
+                <li style="margin-bottom: 10px;">• Answer questions about the Indian Constitution</li>
+                <li style="margin-bottom: 10px;">• Enter numerical answers only</li>
+                <li style="margin-bottom: 10px;">• Get achievements for good performance</li>
+                <li style="margin-bottom: 10px;">• Track your progress as you play</li>
+            </ul>
+        `);
+            });
+
+            document.getElementById('leaderboard-btn').addEventListener('click', () => {
+              // Fetch leaderboard data from the database
+              const leaderboardRef = ref(db, 'leaderboard');
+              get(leaderboardRef)
+                .then((snapshot) => {
+                  const leaderboardData = snapshot.val();
+                  const leaderboardEntries = Object.entries(leaderboardData || {});
+
+                  // Sort leaderboardEntries by score (descending)
+                  leaderboardEntries.sort((a, b) => b[1] - a[1]);
+
+                  // Generate leaderboard HTML
+                  const leaderboardHtml = `
+        <h2 style="color: var(--primary-color); margin-bottom: 20px;">Leaderboard</h2>
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Player</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${leaderboardEntries.map(([player, score], index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${player}</td>
+                <td>${score}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+
+                  // Show the leaderboard in the popup
+                  showPopup(leaderboardHtml);
+                })
+                .catch((error) => {
+                  console.error('Error fetching leaderboard data:', error);
+                });
+            });
+
+
+            document.getElementById('achievements-btn').addEventListener('click', () => {
+              const achievementsList = Object.values(this.achievements)
+                .map(achievement => `
+                <div class="achievement-card ${achievement.unlocked ? 'unlocked' : ''}">
+                    <h4>${achievement.title}</h4>
+                    <p>${achievement.description}</p>
+                </div>
+            `).join('');
+
+              showPopup(`
+            <h2 style="color: var(--primary-color); margin-bottom: 20px;">Achievements</h2>
+            <div class="achievements-grid">
+                ${achievementsList}
+            </div>
+        `);
+            });
+
+            // Close button and overlay click handlers
+            closePopupButton.addEventListener('click', hidePopup);
+            popupOverlay.addEventListener('click', hidePopup);
+
+            // Close on escape key
+            document.addEventListener('keydown', (e) => {
+              if (e.key === 'Escape') {
+                hidePopup();
+              }
+            });
+          }
+          setupEventListeners() {
+            // Input validation
+            this.elements.playerNameInput.addEventListener('input', () => this.validateStartForm());
+
+            // Start button
+            this.elements.startButton.addEventListener('click', () => {
+              this.startGame();
+              // Add animation class
+              this.elements.gameContainer.classList.add('fade-in');
+            });
+            // Input and checkbox validation
+            this.elements.playerNameInput.addEventListener('input', () => this.validateStartForm());
+
+            // Start button
+            this.elements.startButton.addEventListener('click', () => {
+              if (!this.elements.startButton.disabled) {
+                this.startGame();
+                // Add animation class
+                this.elements.gameContainer.classList.add('fade-in');
+              }
+            });
+            document.querySelectorAll('.btn').forEach(button => {
+              button.addEventListener('mouseenter', (e) => {
+                e.target.style.transform = 'scale(1.05)';
+              });
+              button.addEventListener('mouseleave', (e) => {
+                e.target.style.transform = 'scale(1)';
+              });
+            });
+          }
+
+          validateStartForm() {
+            const nameValid = this.elements.playerNameInput.value.trim().length > 0;
+            this.elements.startButton.disabled = !nameValid;
+          }
+
+          startGame() {
+            if (this.elements.startButton.disabled) return;
+
+            this.playerName = this.elements.playerNameInput.value.trim();
+            this.elements.startModal.style.display = 'none';
+            this.elements.gameContainer.style.display = 'block';
+
+            this.startTime = Date.now();
+            this.startTimer(); // Start the timer
+            this.loadCurrentSet();
+          }
+
+          loadCurrentSet() {
+            this.elements.cardContainer.innerHTML = '';
+            const currentSet = this.cardSets[this.currentSetIndex];
+
+            currentSet.forEach(cardData => {
+              const card = this.createCard(cardData);
+              this.elements.cardContainer.appendChild(card);
+            });
+          }
+
+          createCard(data) {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front">
+          <div class="card-title">${data.title}</div>
+          <div class="card-body">${data.body}</div>
+          <input type="number" class="card-input" placeholder="Enter Your Answer">
+          <div>
+            <button class="btn check-btn">Check Answer</button>
+            <button class="btn info-btn">More Info</button>
+          </div>
+        </div>
+        <div class="card-back">
+          <div class="result"></div>
+          <div class="back-info">
+            <div class="additional-info">${data.info}</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+            const checkBtn = card.querySelector('.check-btn');
+            const infoBtn = card.querySelector('.info-btn');
+            const input = card.querySelector('.card-input');
+            const result = card.querySelector('.result');
+
+            checkBtn.addEventListener('click', () => this.checkAnswer(card, input, data, result));
+            infoBtn.addEventListener('click', () => this.showInfo(data));
+
+            return card;
+          }
+
+          updateProgress() {
+            const totalCards = this.cardSets.flat().length;
+            const completedCards = this.totalAnswers;
+            const progress = (completedCards / totalCards) * 100;
+            const progressBar = document.getElementById('game-progress-bar');
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${Math.round(progress)}%`;
+          }
+
+          showAchievementToast(achievement) {
+            const toast = document.createElement('div');
+            toast.className = 'achievement-toast';
+            toast.innerHTML = `
+      <h3>🏆 Achievement Unlocked!</h3>
+      <p>${achievement.title}</p>
+      <p>${achievement.description}</p>
+    `;
+            document.body.appendChild(toast);
+            toast.style.display = 'block';
+            setTimeout(() => {
+              toast.style.display = 'none';
+              toast.remove();
+            }, 3000);
+          }
+
+          checkAchievements() {
+            // Quick Learner Achievement
+            if (this.consecutiveCorrect >= 3 && !this.achievements.quickLearner.unlocked) {
+              this.achievements.quickLearner.unlocked = true;
+              this.showAchievementToast(this.achievements.quickLearner);
+            }
+
+            // Constitutional Expert Achievement
+            const accuracy = (this.correctAnswers / this.totalAnswers) * 100;
+            if (this.totalAnswers === this.cardSets.flat().length && accuracy >= 80 && !this.achievements.constitutionalExpert.unlocked) {
+              this.achievements.constitutionalExpert.unlocked = true;
+              this.showAchievementToast(this.achievements.constitutionalExpert);
+            }
+
+            // Speedy Scholar Achievement
+            if (this.startTime) {
+              const timeElapsed = (Date.now() - this.startTime) / 1000;
+              if (timeElapsed <= 60 && !this.achievements.speedyScholar.unlocked) {
+                this.achievements.speedyScholar.unlocked = true;
+                this.showAchievementToast(this.achievements.speedyScholar);
+              }
+            }
+          }
+
+          checkAnswer(card, input, data, result) {
+            const userAnswer = parseInt(input.value);
+            this.totalAnswers++;
+
+            if (userAnswer === data.year) {
+              result.innerHTML = 'Correct!';
+              result.classList.add('correct');
+              this.correctAnswers++;
+              this.consecutiveCorrect++;
+
+              // Add points and potentially coins
+              this.addPoints(10);
+
+              // Add 5 seconds for correct answer
+              this.addTime(5);
+            } else {
+              result.innerHTML = `Wrong. The correct answer is ${data.year}`;
+              result.classList.add('incorrect');
+              this.consecutiveCorrect = 0;
+            }
+
+            card.classList.add('flipped');
+            this.updateProgress();
+            this.checkAchievements();
+            this.checkSetCompletion();
+          }
+
+          // New method to add points
+          addPoints(pointsToAdd) {
+            const pointsElement = document.getElementById('game-points');
+            const coinsElement = document.getElementById('game-coins');
+
+            // Add points
+            this.points += pointsToAdd;
+            pointsElement.textContent = this.points;
+
+            // Convert points to coins (1 coin per 50 points)
+            this.coins = Math.floor(this.points / 30);
+            coinsElement.textContent = this.coins;
+          }
+
+          endGame(timeOut = false) {
+            // Clear the timer interval
+            if (this.timerInterval) {
+              clearInterval(this.timerInterval);
+            }
+
+            this.elements.cardContainer.innerHTML = `
+      <div style="text-align:center; width:100%; padding: 30px;">
+          <h2>${timeOut ? 'Time is up! ' : 'Congratulations, ' + this.playerName + '! '}</h2>
+          <p>You answered ${this.correctAnswers} out of ${this.totalAnswers} questions correctly.</p>
+          <p>Points: ${this.points} | Coins: ${this.coins}</p>
+          <button class="start-btn" onclick="location.reload()">Play Again</button>
+      </div>
+  `;
+          }
+
+          checkSetCompletion() {
+            const allCards = this.elements.cardContainer.querySelectorAll('.card');
+            const allFlipped = Array.from(allCards).every(card => card.classList.contains('flipped'));
+
+            if (allFlipped) {
+              if (this.currentSetIndex < this.cardSets.length - 1) {
+                this.currentSetIndex++;
+                setTimeout(() => this.loadCurrentSet(), 2000);
+              } else {
+                this.endGame();
+              }
+            }
+          }
+          endGame() {
+            this.elements.cardContainer.innerHTML = `
+      <div style="text-align:center; width:100%; padding: 30px;">
+        <h2>Congratulations, ${this.playerName}! 🎉</h2>
+        <p>You've completed the Constitution of India Learning Game!</p>
+        <button class="start-btn" onclick="location.reload()">Play Again</button>
+      </div>
+    `;
+            add(playerName, score);
+          }
+
+          showInfo(data) {
+            const infoPopup = document.getElementById('info-popup');
+            const infoContent = document.getElementById('info-content');
+
+            infoContent.innerHTML = `
+      <h2>${data.title}</h2>
+      <p>${data.info}</p>
+    `;
+
+            infoPopup.style.display = 'flex';
+          }
+
+          closeInfoPopup() {
+            document.getElementById('info-popup').style.display = 'none';
+          }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+          new ConstitutionGame(cardSets);
+        });
+      </script>
+</body>
+
+</html>

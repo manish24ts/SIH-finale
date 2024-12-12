@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constitution Word Search</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2a5885;
+            --secondary-color: #4caf50;
+            --accent-color: #FFA500;
+            --background-light: #f0f4f8;
+            --background-dark: #d9e8ff;
+            --text-color: #333;
+            --white: #ffffff;
+            --gray: #f4f4f4;
+        }
+
+        body {
+            background: linear-gradient(120deg, var(--background-light), var(--background-dark));
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Responsive Typography */
+        html {
+            font-size: 16px;
+        }
+
+        @media screen and (max-width: 768px) {
+            html {
+                font-size: 14px;
+            }
+        }
+
+        /* Header Styling */
+        header {
+            background: linear-gradient(90deg, var(--primary-color), #1a237e);
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+        }
+
+        .header-icons {
+            display: flex;
+            gap: 1.25rem;
+        }
+
+        .header-icons i {
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .header-icons i:hover {
+            color: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        /* Main Game Container */
+        .game-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            padding: 2rem;
+            flex-grow: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .grid-section,
+        .word-list-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Puzzle Grid */
+        #puzzle {
+            display: grid;
+            gap: 0.3rem;
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            justify-content: center;
+        }
+
+        .cell {
+            width: 2.8rem;
+            height: 2.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: var(--gray);
+            border-radius: 0.5rem;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .cell:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(42, 88, 133, 0.5);
+        }
+
+        .cell.selected {
+            background: linear-gradient(135deg, var(--accent-color), #FF6F00);
+            color: var(--white);
+            transform: scale(1.05);
+        }
+
+        .cell.correct {
+            background: var(--secondary-color);
+            color: var(--white);
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+        }
+
+        /* Word List */
+        #word-list {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        #word-list h3 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        #word-list ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.625rem;
+        }
+
+        #word-list li {
+            text-transform: uppercase;
+            text-align: center;
+            padding: 0.3rem;
+            border-radius: 0.3rem;
+            transition: all 0.3s ease;
+        }
+
+        #word-list li:hover {
+            background-color: rgba(42, 88, 133, 0.1);
+        }
+
+        #word-list li.found {
+            text-decoration: line-through;
+            color: var(--secondary-color);
+            opacity: 0.5;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            animation: modalSlideIn 0.4s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal .close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s;
+        }
+
+        .modal .close:hover {
+            color: var(--text-color);
+        }
+
+        /* Completion Modal */
+        #completion-modal .completion-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.25rem;
+        }
+
+        #completion-modal button {
+            padding: 0.625rem 1.25rem;
+            background: var(--secondary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 1rem;
+        }
+
+        #completion-modal button:hover {
+            background: #388e3c;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .grid-section,
+            .word-list-section {
+                width: 100%;
+            }
+
+            #puzzle {
+                justify-self: center;
+                width: 100%;
+                max-width: 500px;
+            }
+
+            .cell {
+                width: 2.3rem;
+                height: 2.3rem;
+                font-size: 1rem;
+            }
+
+            #word-list ul {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .cell {
+                width: 2rem;
+                height: 2rem;
+                font-size: 0.9rem;
+            }
+
+            #word-list ul {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Constitution Word Search</h1>
+            <div class="header-icons">
+                <i id="constitution-icon" class="fas fa-scroll" title="Constitution Information"></i>
+                <i id="instructions-icon" class="fas fa-info-circle" title="Game Instructions"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="game-container">
+        <div class="grid-section">
+            <div id="puzzle" class="puzzle-grid"></div>
+        </div>
+
+        <div class="word-list-section">
+            <div id="word-list">
+                <h3>Words to Find</h3>
+                <ul id="words"></ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div id="instructions-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Game Instructions</h2>
+            <div class="instruction-details">
+                <p>🔍 Click letters to form words listed in the side panel</p>
+                <p>📝 Find all constitutional terms</p>
+                <p>🏆 Complete the game to learn more about the Constitution</p>
+                <div class="instruction-icons">
+                    <i class="fas fa-arrow-right"></i>
+                    <i class="fas fa-lightbulb"></i>
+                    <i class="fas fa-flag"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="info-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-description"></p>
+        </div>
+    </div>
+
+    <div id="constitution-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>About the Constitution</h2>
+            <div class="constitution-info">
+                <img src="con.jpg" height="150px" width="150px" alt="Constitution" class="constitution-image">
+                <p>The Constitution is the supreme law that provides the framework for governance, fundamental rights,
+                    and the principles of democracy.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="completion-modal" class="modal">
+        <div class="modal-content">
+            <h2>Congratulations!</h2>
+            <p>You've found all the constitutional words!</p>
+            <div class="completion-actions">
+                <button id="restart-game">Play Again</button>
+                <button id="learn-more">Learn More</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Explore and Learn about the Constitution</p>
+    </footer>
+
+    <script>
+        const gridSize = 15;
+        const words = [
+            "DEMOCRACY", "JUDICIARY", "LEGISLATURE", "EXECUTIVE",
+            "LIBERTY", "EQUALITY", "CONSTITUTION", "SOVEREIGN",
+            "JUSTICE", "FRATERNITY", "REPUBLIC", "FUNDAMENTAL",
+            "RIGHTS", "DUTIES", "FEDERAL"
+        ];
+
+        const wordInfo = {
+            DEMOCRACY: "A system of government where power is vested in the people.",
+            JUDICIARY: "The branch of government responsible for interpreting laws.",
+            LEGISLATURE: "The body responsible for creating and passing laws.",
+            EXECUTIVE: "The branch responsible for implementing and enforcing laws.",
+            LIBERTY: "The state of being free within society from oppressive restrictions.",
+            EQUALITY: "The state of being equal, especially in status, rights, and opportunities.",
+            CONSTITUTION: "The fundamental principles governing a nation's political system.",
+            SOVEREIGN: "Having supreme power and authority within a territory.",
+            JUSTICE: "The quality of being fair and reasonable in legal proceedings.",
+            FRATERNITY: "A sense of friendship and support within a community.",
+            REPUBLIC: "A state where power is held by the people and their elected representatives.",
+            FUNDAMENTAL: "Basic and essential principles underlying a system.",
+            RIGHTS: "Legal, social, or ethical principles of freedom or entitlement.",
+            DUTIES: "Moral or legal obligations required of citizens.",
+            FEDERAL: "A system of government with power divided between central and regional authorities."
+        };
+
+        class ConstitutionWordSearch {
+            constructor() {
+                this.grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(''));
+                this.selectedCells = [];
+                this.foundWords = new Set();
+                this.initializeGame();
+                this.setupEventListeners();
+            }
+
+            initializeGame() {
+                this.placeWords();
+                this.fillGrid();
+                this.renderGrid();
+                this.renderWordList();
+            }
+
+            placeWords() {
+                words.forEach(word => {
+                    let placed = false;
+                    while (!placed) {
+                        const direction = Math.floor(Math.random() * 3);
+                        const startRow = Math.floor(Math.random() * gridSize);
+                        const startCol = Math.floor(Math.random() * gridSize);
+
+                        if (this.canPlaceWord(word, startRow, startCol, direction)) {
+                            this.placeWordInGrid(word, startRow, startCol, direction);
+                            placed = true;
+                        }
+                    }
+                });
+            }
+
+            canPlaceWord(word, row, col, direction) {
+                const checks = [
+                    () => col + word.length <= gridSize,  // Horizontal
+                    () => row + word.length <= gridSize,  // Vertical
+                    () => row + word.length <= gridSize && col + word.length <= gridSize  // Diagonal
+                ];
+
+                if (!checks[direction]()) return false;
+
+                for (let i = 0; i < word.length; i++) {
+                    const r = row + (direction !== 0 ? i : 0);
+                    const c = col + (direction !== 1 ? i : 0);
+                    if (this.grid[r][c] !== '' && this.grid[r][c] !== word[i]) return false;
+                }
+                return true;
+            }
+
+            placeWordInGrid(word, row, col, direction) {
+                for (let i = 0; i < word.length; i++) {
+                    const r = row + (direction !== 0 ? i : 0);
+                    const c = col + (direction !== 1 ? i : 0);
+                    this.grid[r][c] = word[i];
+                }
+            }
+
+            fillGrid() {
+                for (let row = 0; row < gridSize; row++) {
+                    for (let col = 0; col < gridSize; col++) {
+                        if (this.grid[row][col] === '') {
+                            this.grid[row][col] = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                        }
+                    }
+                }
+            }
+
+            renderGrid() {
+                const puzzle = document.getElementById("puzzle");
+                puzzle.innerHTML = "";
+                puzzle.style.gridTemplateColumns = `repeat(${gridSize}, 30px)`;
+
+                for (let row = 0; row < gridSize; row++) {
+                    for (let col = 0; col < gridSize; col++) {
+                        const cell = document.createElement("div");
+                        cell.className = "cell";
+                        cell.textContent = this.grid[row][col];
+                        cell.dataset.row = row;
+                        cell.dataset.col = col;
+                        cell.addEventListener("click", this.handleCellClick.bind(this));
+                        puzzle.appendChild(cell);
+                    }
+                }
+            }
+
+            renderWordList() {
+                const wordList = document.getElementById("words");
+                wordList.innerHTML = "";
+                words.forEach(word => {
+                    const li = document.createElement("li");
+                    li.textContent = word;
+                    li.id = word;
+                    wordList.appendChild(li);
+                });
+            }
+
+            handleCellClick(e) {
+                const cell = e.target;
+                const row = parseInt(cell.dataset.row);
+                const col = parseInt(cell.dataset.col);
+
+                cell.classList.toggle("selected");
+
+                const cellIndex = this.selectedCells.findIndex(c => c.row === row && c.col === col);
+
+                if (cellIndex !== -1) {
+                    this.selectedCells.splice(cellIndex, 1);
+                } else {
+                    this.selectedCells.push({ row, col });
+                }
+
+                this.checkSelection();
+            }
+
+            checkSelection() {
+                if (this.selectedCells.length < 2) return;
+
+                const selectedLetters = this.selectedCells.map(({ row, col }) => this.grid[row][col]);
+                const selectedWord = selectedLetters.join('');
+                const reversedWord = selectedLetters.slice().reverse().join('');
+
+                if (words.includes(selectedWord) || words.includes(reversedWord)) {
+                    const word = words.includes(selectedWord) ? selectedWord : reversedWord;
+                    this.highlightCorrectWord();
+                    this.markWordFound(word);
+                    this.showWordInfo(word);
+                    this.selectedCells = [];
+                }
+            }
+
+            highlightCorrectWord() {
+                this.selectedCells.forEach(({ row, col }) => {
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    cell.classList.add("correct");
+                    cell.classList.remove("selected");
+                });
+            }
+
+            markWordFound(word) {
+                if (!this.foundWords.has(word)) {
+                    const wordElement = document.getElementById(word);
+                    wordElement.classList.add("found");
+                    this.foundWords.add(word);
+                    this.checkGameCompletion();
+                }
+            }
+
+            showWordInfo(word) {
+                const modal = document.getElementById("info-modal");
+                const modalTitle = document.getElementById("modal-title");
+                const modalDescription = document.getElementById("modal-description");
+
+                modalTitle.textContent = word;
+                modalDescription.textContent = wordInfo[word];
+                modal.style.display = "flex";
+
+                const closeBtn = modal.querySelector(".close");
+                closeBtn.onclick = () => modal.style.display = "none";
+            }
+
+            checkGameCompletion() {
+                if (this.foundWords.size === words.length) {
+                    document.getElementById("completion-modal").style.display = "flex";
+                }
+            }
+
+            setupEventListeners() {
+                // Instructions Modal
+                document.getElementById("instructions-icon").addEventListener("click", () => {
+                    document.getElementById("instructions-modal").style.display = "flex";
+                });
+
+                // Constitution Info Modal
+                document.getElementById("constitution-icon").addEventListener("click", () => {
+                    document.getElementById("constitution-modal").style.display = "flex";
+                });
+
+                // Close Modal Events
+                document.querySelectorAll(".modal .close").forEach(close => {
+                    close.addEventListener("click", () => {
+                        close.closest(".modal").style.display = "none";
+                    });
+                });
+
+                // Completion Modal Actions
+                document.getElementById("restart-game").addEventListener("click", () => {
+                    this.resetGame();
+                });
+
+                document.getElementById("learn-more").addEventListener("click", () => {
+                    document.getElementById("constitution-modal").style.display = "flex";
+                });
+            }
+
+            resetGame() {
+                // Reset grid
+                this.grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(''));
+                this.selectedCells = [];
+                this.foundWords.clear();
+
+                // Remove found and correct classes
+                document.querySelectorAll('.cell.correct').forEach(cell => {
+                    cell.classList.remove('correct');
+                });
+                document.querySelectorAll('#words li.found').forEach(li => {
+                    li.classList.remove('found');
+                });
+
+                // Hide completion modal
+                document.getElementById("completion-modal").style.display = "none";
+
+                // Reinitialize game
+                this.initializeGame();
+            }
+        }
+
+        // Initialize the game when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new ConstitutionWordSearch();
+        });
+    </script>
+</body>
+
+</html>

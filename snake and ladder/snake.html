@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constitution Snake and Ladder</title>
+    
+</head>
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.cont {
+    display: grid;
+    width: 600px;
+    grid-template-columns: repeat(10, 1fr);
+    margin: 0px 0 0px 0;
+}
+
+.cont div {
+    width: 60px;
+    height: 60px;
+    border: .2px solid black;
+}
+
+#p1, #p2 {
+    width: 50px;
+    height: 50px;
+    border-radius: 100px;
+    position: relative;
+    border: 3px solid black;
+}
+
+#p1 {
+    background-color: rgb(236, 82, 82);
+    position: relative;
+    top: 0px;
+    transition: all linear .5s;
+    left: -62px;
+    z-index: 2;
+}
+
+#p2 {
+    background-color: rgb(243, 181, 46);
+    position: relative;
+    top: -55px;
+    left: -62px;
+    transition: all linear .5s;
+    z-index: 2;
+}
+
+img {
+    position: relative;
+    top: -615px;
+    left: 8px;
+    width: 615px;
+    height: 615px;
+}
+
+#diceCont {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 200px;
+    left: 120px;
+    font-size: 2rem;
+}
+
+#diceBtn {
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: rgb(75, 140, 197);
+    border: none;
+    border-radius: 5px;
+    width: 200px;
+    color: white;
+    font-size: 1.2rem;
+    transition: background-color 0.3s;
+}
+
+#diceBtn:hover {
+    background-color: rgb(61, 114, 161);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 30px;
+    width: 70%;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.quiz-options {
+    display: grid;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.quiz-option {
+    padding: 15px;
+    cursor: pointer;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+    background-color: white;
+}
+
+.quiz-option:hover {
+    background-color: #f0f0f0;
+    border-color: #aaa;
+}
+
+.result {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.correct {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.incorrect {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+</style>
+
+<body>
+    <h1>Constitution Snake and Ladder</h1>
+
+    <div id="diceCont">
+        <p id="tog">Red's Turn</p>
+        <p id="dice">0</p>
+        <button id="diceBtn">ROLL</button>
+    </div>
+
+    <div class="cont">
+        <div class="box" id="b100"></div>
+        <div class="box" id="b99"></div>
+        <div class="box" id="b98"></div>
+        <div class="box" id="b97"></div>
+        <div class="box" id="b96"></div>
+        <div class="box" id="b95"></div>
+        <div class="box" id="b94"></div>
+        <div class="box" id="b93"></div>
+        <div class="box" id="b92"></div>
+        <div class="box" id="b91"></div>
+        <div class="box" id="b81"></div>
+        <div class="box" id="b82"></div>
+        <div class="box" id="b83"></div>
+        <div class="box" id="b84"></div>
+        <div class="box" id="b85"></div>
+        <div class="box" id="b86"></div>
+        <div class="box" id="b87"></div>
+        <div class="box" id="b88"></div>
+        <div class="box" id="b89"></div>
+        <div class="box" id="b90"></div>
+        <div class="box" id="b80"></div>
+        <div class="box" id="b79"></div>
+        <div class="box" id="b78"></div>
+        <div class="box" id="b77"></div>
+        <div class="box" id="b76"></div>
+        <div class="box" id="b75"></div>
+        <div class="box" id="b74"></div>
+        <div class="box" id="b73"></div>
+        <div class="box" id="b72"></div>
+        <div class="box" id="b71"></div>
+        <div class="box" id="b61"></div>
+        <div class="box" id="b62"></div>
+        <div class="box" id="b63"></div>
+        <div class="box" id="b64"></div>
+        <div class="box" id="b65"></div>
+        <div class="box" id="b66"></div>
+        <div class="box" id="b67"></div>
+        <div class="box" id="b68"></div>
+        <div class="box" id="b69"></div>
+        <div class="box" id="b70"></div>
+        <div class="box" id="b60"></div>
+        <div class="box" id="b59"></div>
+        <div class="box" id="b58"></div>
+        <div class="box" id="b57"></div>
+        <div class="box" id="b56"></div>
+        <div class="box" id="b55"></div>
+        <div class="box" id="b54"></div>
+        <div class="box" id="b53"></div>
+        <div class="box" id="b52"></div>
+        <div class="box" id="b51"></div>
+        <div class="box" id="b41"></div>
+        <div class="box" id="b42"></div>
+        <div class="box" id="b43"></div>
+        <div class="box" id="b44"></div>
+        <div class="box" id="b45"></div>
+        <div class="box" id="b46"></div>
+        <div class="box" id="b47"></div>
+        <div class="box" id="b48"></div>
+        <div class="box" id="b49"></div>
+        <div class="box" id="b50"></div>
+        <div class="box" id="b40"></div>
+        <div class="box" id="b39"></div>
+        <div class="box" id="b38"></div>
+        <div class="box" id="b37"></div>
+        <div class="box" id="b36"></div>
+        <div class="box" id="b35"></div>
+        <div class="box" id="b34"></div>
+        <div class="box" id="b33"></div>
+        <div class="box" id="b32"></div>
+        <div class="box" id="b31"></div>
+        <div class="box" id="b21"></div>
+        <div class="box" id="b22"></div>
+        <div class="box" id="b23"></div>
+        <div class="box" id="b24"></div>
+        <div class="box" id="b25"></div>
+        <div class="box" id="b26"></div>
+        <div class="box" id="b27"></div>
+        <div class="box" id="b28"></div>
+        <div class="box" id="b29"></div>
+        <div class="box" id="b30"></div>
+        <div class="box" id="b20"></div>
+        <div class="box" id="b19"></div>
+        <div class="box" id="b18"></div>
+        <div class="box" id="b17"></div>
+        <div class="box" id="b16"></div>
+        <div class="box" id="b15"></div>
+        <div class="box" id="b14"></div>
+        <div class="box" id="b13"></div>
+        <div class="box" id="b12"></div>
+        <div class="box" id="b11"></div>
+        <div class="box" id="b01">
+            <p id="p1"></p>
+            <p id="p2"></p>
+        </div>
+        <div class="box" id="b02"></div>
+        <div class="box" id="b03"></div>
+        <div class="box" id="b04"></div>
+        <div class="box" id="b05"></div>
+        <div class="box" id="b06"></div>
+        <div class="box" id="b07"></div>
+        <div class="box" id="b08"></div>
+        <div class="box" id="b09"></div>
+        <div class="box" id="b10"></div>
+    </div>
+
+    <img src="snake ladder.png" alt="">
+
+    <div id="quizModal" class="modal">
+        <div class="modal-content">
+            <h2 id="questionText"></h2>
+            <div id="options" class="quiz-options"></div>
+            <div id="result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let tog = 1;
+    let p1sum = 0;
+    let p2sum = 0;
+    
+    const constitutionQuizzes = [
+        {
+            question: "Which Article deals with Right to Equality?",
+            options: ["Article 14", "Article 19", "Article 21", "Article 32"],
+            correct: "Article 14"
+        },
+        {
+            question: "Which Article abolishes Untouchability?",
+            options: ["Article 15", "Article 17", "Article 21", "Article 25"],
+            correct: "Article 17"
+        },
+        {
+            question: "Right to Education is covered under which Article?",
+            options: ["Article 21A", "Article 19", "Article 25", "Article 32"],
+            correct: "Article 21A"
+        },
+        {
+            question: "Which Article deals with Freedom of Speech?",
+            options: ["Article 19", "Article 21", "Article 25", "Article 32"],
+            correct: "Article 19"
+        },
+        {
+            question: "Which Article provides Right to Constitutional Remedies?",
+            options: ["Article 14", "Article 21", "Article 32", "Article 44"],
+            correct: "Article 32"
+        }
+    ];
+    
+    function showQuiz(type, player, currentSum) {
+        return new Promise((resolve) => {
+            const modal = document.getElementById("quizModal");
+            const questionText = document.getElementById("questionText");
+            const optionsDiv = document.getElementById("options");
+            
+            const randomQuiz = constitutionQuizzes[Math.floor(Math.random() * constitutionQuizzes.length)];
+            
+            questionText.textContent = randomQuiz.question;
+            optionsDiv.innerHTML = "";
+            
+            randomQuiz.options.forEach(option => {
+                const button = document.createElement("button");
+                button.className = "quiz-option";
+                button.textContent = option;
+                button.onclick = () => {
+                    const isCorrect = option === randomQuiz.correct;
+                    handleAnswer(isCorrect, type, currentSum);
+                    modal.style.display = "none";
+                    resolve(isCorrect);
+                };
+                optionsDiv.appendChild(button);
+            });
+            
+            modal.style.display = "block";
+        });
+    }
+    
+    function handleAnswer(isCorrect, type, currentSum) {
+        if (type === "ladder") {
+            if (isCorrect) {
+                alert("Correct! You can climb the ladder!");
+            } else {
+                alert("Wrong answer! You'll stay at your current position.");
+            }
+        } else if (type === "snake") {
+            if (isCorrect) {
+                alert("Correct! You're safe from the snake!");
+            } else {
+                alert("Wrong answer! Snake will bite you!");
+            }
+        }
+    }
+    
+    async function play(player, psum, correction, num) {
+        let sum;
+        if (psum == 'p1sum') {
+            const newPosition = p1sum + num;
+            
+            if (newPosition > 100) {
+                return;
+            }
+    
+            const snakeHeads = [32, 36, 48, 62, 88, 95, 97];
+            const ladderStarts = [1, 4, 8, 21, 28, 50, 71, 80];
+    
+            if (snakeHeads.includes(newPosition)) {
+                const isCorrect = await showQuiz("snake", player, newPosition);
+                if (isCorrect) {
+                    p1sum = newPosition;
+                } else {
+                    p1sum = newPosition;
+                    if (newPosition === 32) p1sum = 10;
+                    if (newPosition === 36) p1sum = 6;
+                    if (newPosition === 48) p1sum = 26;
+                    if (newPosition === 62) p1sum = 18;
+                    if (newPosition === 88) p1sum = 24;
+                    if (newPosition === 95) p1sum = 56;
+                    if (newPosition === 97) p1sum = 78;
+                }
+            } else if (ladderStarts.includes(newPosition)) {
+                const isCorrect = await showQuiz("ladder", player, newPosition);
+                if (isCorrect) {
+                    p1sum = newPosition;
+                    if (newPosition === 1) p1sum = 38;
+                    if (newPosition === 4) p1sum = 14;
+                    if (newPosition === 8) p1sum = 30;
+                    if (newPosition === 21) p1sum = 42;
+                    if (newPosition === 28) p1sum = 76;
+                    if (newPosition === 50) p1sum = 67;
+                    if (newPosition === 71) p1sum = 92;
+                    if (newPosition === 80) p1sum = 99;
+                } else {
+                    p1sum = newPosition;
+                }
+            } else {
+                p1sum = newPosition;
+            }
+            
+            sum = p1sum;
+        }
+    
+        if (psum == 'p2sum') {
+            const newPosition = p2sum + num;
+            
+            if (newPosition > 100) {
+                return;
+            }
+    
+            const snakeHeads = [32, 36, 48, 62, 88, 95, 97];
+            const ladderStarts = [1, 4, 8, 21, 28, 50, 71, 80];
+    
+            if (snakeHeads.includes(newPosition)) {
+                const isCorrect = await showQuiz("snake", player, newPosition);
+                if (isCorrect) {
+                    p2sum = newPosition;
+                } else {
+                    p2sum = newPosition;
+                    if (newPosition === 32) p2sum = 10;
+                    if (newPosition === 36) p2sum = 6;
+                    if (newPosition === 48) p2sum = 26;
+                    if (newPosition === 62) p2sum = 18;
+                    if (newPosition === 88) p2sum = 24;
+                    if (newPosition === 95) p2sum = 56;
+                    if (newPosition === 97) p2sum = 78;
+                }
+            } else if (ladderStarts.includes(newPosition)) {
+                const isCorrect = await showQuiz("ladder", player, newPosition);
+                if (isCorrect) {
+                    p2sum = newPosition;
+                    if (newPosition === 1) p2sum = 38;
+                    if (newPosition === 4) p2sum = 14;
+                    if (newPosition === 8) p2sum = 30;
+                    if (newPosition === 21) p2sum = 42;
+                    if (newPosition === 28) p2sum = 76;
+                    if (newPosition === 50) p2sum = 67;
+                    if (newPosition === 71) p2sum = 92;
+                    if (newPosition === 80) p2sum = 99;
+                } else {
+                    p2sum = newPosition;
+                }
+            } else {
+                p2sum = newPosition;
+            }
+            
+            sum = p2sum;
+        }
+        
+        updatePosition(player, sum, correction);
+    }
+    
+    function updatePosition(player, sum, correction) {
+        if (sum === 100) {
+            alert(player === 'p1' ? "Red Won!" : "Yellow Won!");
+            location.reload();
+            return;
+        }
+    
+        const piece = document.getElementById(player);
+        piece.style.transition = 'linear all .5s';
+    
+        if (sum < 10) {
+            piece.style.left = `${(sum - 1) * 62}px`;
+            piece.style.top = `${-0 * 62 - correction}px`;
+        } else {
+            const numarr = Array.from(String(sum));
+            const n1 = parseInt(numarr[0]);
+            const n2 = numarr.length > 1 ? parseInt(numarr[1]) : 0;
+    
+            if (n1 % 2 !== 0) {
+                if (n2 === 0) {
+                    piece.style.left = `${9 * 62}px`;
+                    piece.style.top = `${(-n1 + 1) * 62 - correction}px`;
+                } else {
+                    piece.style.left = `${(9 - (n2 - 1)) * 62}px`;
+                    piece.style.top = `${-n1 * 62 - correction}px`;
+                }
+            } else {
+                if (n2 === 0) {
+                    piece.style.left = `${0 * 62}px`;
+                    piece.style.top = `${(-n1 + 1) * 62 - correction}px`;
+                } else {
+                    piece.style.left = `${(n2 - 1) * 62}px`;
+                    piece.style.top = `${-n1 * 62 - correction}px`;
+                }
+            }
+        }
+    }
+    
+    document.getElementById("diceBtn").addEventListener("click", async function() {
+        const num = Math.floor(Math.random() * 6) + 1;
+        document.getElementById("dice").innerText = num;
+    
+        if (tog % 2 !== 0) {
+            document.getElementById('tog').innerText = "Yellow's Turn";
+            await play('p1', 'p1sum', 0, num);
+        } else {
+            document.getElementById('tog').innerText = "Red's Turn";
+            await play('p2', 'p2sum', 55, num);
+        }
+    
+        tog++;
+    });
+    </script>
+</body>
+
+</html>

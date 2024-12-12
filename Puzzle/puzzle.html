@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constitution Quest: Jigsaw Puzzle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #004B87;
+            --secondary-color: #FF9933;
+            --accent-color: #138808;
+            --text-color: #1A2B3C;
+            --background-color: #F0F4F8;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, white 50%, var(--accent-color) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-color);
+        }
+
+        .game-container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            max-width: 1100px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .level-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .level-btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .level-btn.active {
+            background-color: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-title {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .game-board {
+            display: flex;
+            gap: 30px;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .piece-pool {
+            flex: 1;
+            background-color: rgba(0, 75, 135, 0.05);
+            border: 2px dashed var(--primary-color);
+            border-radius: var(--border-radius);
+            min-height: 400px;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-content: flex-start;
+        }
+
+        .puzzle-grid {
+            width: 420px;
+            height: 420px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone {
+            position: absolute;
+            border: 1px dashed rgba(0, 75, 135, 0.3);
+        }
+
+        .puzzle-piece {
+            width: 100px;
+            height: 100px;
+            background-size: 400px 400px;
+            background-repeat: no-repeat;
+            cursor: grab;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .puzzle-piece:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .puzzle-piece.dragging {
+            opacity: 0.7;
+            cursor: grabbing;
+        }
+
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            background-color: rgba(19, 136, 8, 0.05);
+            border-radius: var(--border-radius);
+            padding: 20px;
+        }
+
+        .preview-image {
+            max-width: 250px;
+            border-radius: 10px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        #constitution-fact {
+            text-align: center;
+            font-style: italic;
+            color: var(--primary-color);
+            padding: 15px;
+            background-color: rgba(0, 75, 135, 0.05);
+            border-radius: var(--border-radius);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="game-container">
+        <div class="level-selector">
+            <button class="level-btn" data-level="0">Level 1</button>
+            <button class="level-btn" data-level="1">Level 2</button>
+            <button class="level-btn" data-level="2">Level 3</button>
+        </div>
+
+        <div class="game-header">
+            <h1 class="game-title">Constitution Quest: Jigsaw Puzzle</h1>
+            <div class="game-stats">
+                <div class="stat-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    Moves: <span id="move-count">0</span>
+                </div>
+                <div class="stat-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Time: <span id="timer">00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-board">
+            <div class="preview-section">
+                <h2>Original Image</h2>
+                <img id="preview-image" src="img1.png" alt="Constitution Preamble" class="preview-image">
+                <p>Solve the Puzzle!</p>
+            </div>
+
+            <div class="puzzle-grid"></div>
+
+            <div class="piece-pool"></div>
+        </div>
+
+        <div class="game-controls">
+            <button id="shuffle-btn" class="btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3.38 8C5.91 14.14 9 19 9 19l3-3-3-3" />
+                    <path d="M15 15.5l3 3 3.12-3.12" />
+                    <path d="M21.12 11.5A9 9 0 0 0 3.38 8" />
+                    <path d="M2.88 12.5A9 9 0 0 0 21 15.5" />
+                </svg>
+                Shuffle Pieces
+            </button>
+            <button id="reset-btn" class="btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                    <path d="M12 7v5l4 2" />
+                </svg>
+                Reset Game
+            </button>
+        </div>
+
+        <div id="constitution-fact">
+            Loading Constitution Fact...
+        </div>
+    </div>
+
+    <div id="win-modal" class="modal">
+        <div class="modal-content">
+            <h2>Congratulations!</h2>
+            <p>You've solved the Constitution Puzzle!</p>
+            <button id="play-again-btn" class="btn">Play Again</button>
+        </div>
+    </div>
+    <script>
+        // Puzzle images configuration
+        const puzzleConfig = [
+            {
+                imageSrc: "img1.png",
+                size: 4,
+                fact: "The U.S. Constitution is the oldest written national constitution still in use today."
+            },
+            {
+                imageSrc: "img2.png",
+                size: 4,
+                fact: "The Constitution was signed on September 17, 1787, by 39 delegates to the Constitutional Convention."
+            },
+            {
+                imageSrc: "img3.png",
+                size: 4,
+                fact: "James Madison is known as the 'Father of the Constitution'."
+            }
+        ];
+
+        let currentLevel = 0;
+        let puzzleSize = puzzleConfig[currentLevel].size;
+        let imageSrc = puzzleConfig[currentLevel].imageSrc;
+        const pieceSize = 100;
+
+        let puzzlePieces = [];
+        let correctPositions = [];
+        let moveCount = 0;
+        let timer = null;
+        let startTime = null;
+
+        const puzzleGrid = document.querySelector('.puzzle-grid');
+        const piecePool = document.querySelector('.piece-pool');
+        const moveCountDisplay = document.getElementById('move-count');
+        const timerDisplay = document.getElementById('timer');
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const winModal = document.getElementById('win-modal');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const constitutionFact = document.getElementById('constitution-fact');
+        const previewImage = document.getElementById('preview-image');
+        const levelSelector = document.querySelector('.level-selector');
+
+        function initializeGame() {
+            // Check if we've completed all puzzles
+            if (currentLevel >= puzzleConfig.length) {
+                showFinalCongratulations();
+                return;
+            }
+
+            puzzleSize = puzzleConfig[currentLevel].size;
+            imageSrc = puzzleConfig[currentLevel].imageSrc;
+            previewImage.src = imageSrc;
+
+            createPuzzlePieces();
+            shufflePuzzle();
+            startTimer();
+            displayConstitutionFact();
+            moveCount = 0;
+            moveCountDisplay.textContent = moveCount;
+            winModal.style.display = 'none';
+        }
+
+        function showFinalCongratulations() {
+            winModal.style.display = 'flex';
+            const modalContent = winModal.querySelector('.modal-content');
+            modalContent.innerHTML = `
+        <h2>Congratulations!</h2>
+        <p>You've completed all Constitution Puzzles!</p>
+        <p>You've learned about the history and significance of the U.S. Constitution.</p>
+        <button id="restart-game-btn" class="btn">Start Over</button>
+    `;
+            const restartBtn = modalContent.querySelector('#restart-game-btn');
+            restartBtn.addEventListener('click', () => {
+                currentLevel = 0;
+                winModal.style.display = 'none';
+                initializeGame();
+            });
+        }
+
+        function createPuzzlePieces() {
+            puzzlePieces = [];
+            correctPositions = [];
+            puzzleGrid.innerHTML = '';
+            piecePool.innerHTML = '';
+
+            for (let i = 0; i < puzzleSize * puzzleSize; i++) {
+                const piece = {
+                    id: i,
+                    x: (i % puzzleSize) * pieceSize,
+                    y: Math.floor(i / puzzleSize) * pieceSize,
+                    correctX: (i % puzzleSize) * pieceSize,
+                    correctY: Math.floor(i / puzzleSize) * pieceSize,
+                    element: null
+                };
+                puzzlePieces.push(piece);
+                correctPositions.push({ x: piece.x, y: piece.y });
+            }
+            renderPuzzle();
+        }
+
+        function renderPuzzle() {
+            puzzlePieces.forEach((piece) => {
+                const pieceElement = document.createElement('div');
+                pieceElement.classList.add('puzzle-piece');
+                pieceElement.style.backgroundImage = `url(${imageSrc})`;
+                pieceElement.style.backgroundPosition = `-${piece.x}px -${piece.y}px`;
+                pieceElement.dataset.id = piece.id;
+                piece.element = pieceElement;
+
+                pieceElement.addEventListener('dragstart', dragStart);
+                pieceElement.addEventListener('dragend', dragEnd);
+                pieceElement.draggable = true;
+
+                piecePool.appendChild(pieceElement);
+            });
+
+            // Create drop zones in the grid
+            for (let i = 0; i < puzzleSize * puzzleSize; i++) {
+                const dropZone = document.createElement('div');
+                dropZone.classList.add('drop-zone');
+                dropZone.style.width = `${pieceSize}px`;
+                dropZone.style.height = `${pieceSize}px`;
+                dropZone.style.left = `${(i % puzzleSize) * pieceSize}px`;
+                dropZone.style.top = `${Math.floor(i / puzzleSize) * pieceSize}px`;
+
+                dropZone.addEventListener('dragover', dragOver);
+                dropZone.addEventListener('drop', drop);
+
+                puzzleGrid.appendChild(dropZone);
+            }
+        }
+
+        function dragStart(e) {
+            e.target.classList.add('dragging');
+            e.dataTransfer = e.dataTransfer || {};
+            e.dataTransfer.setData('text/plain', e.target.dataset.id);
+        }
+
+        function dragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            const pieceId = e.dataTransfer.getData('text/plain');
+            const pieceElement = document.querySelector(`.puzzle-piece[data-id="${pieceId}"]`);
+
+            // Check if the drop zone is empty
+            if (e.target.classList.contains('drop-zone') && !e.target.querySelector('.puzzle-piece')) {
+                e.target.appendChild(pieceElement);
+                moveCount++;
+                moveCountDisplay.textContent = moveCount;
+
+                // Check if piece is in correct position
+                const dropZone = e.target;
+                const expectedX = parseInt(dropZone.style.left);
+                const expectedY = parseInt(dropZone.style.top);
+
+                const piece = puzzlePieces.find(p => p.id === parseInt(pieceId));
+                if (piece && piece.correctX === expectedX && piece.correctY === expectedY) {
+                    pieceElement.style.border = '2px solid green';
+                }
+
+                checkPuzzleCompletion();
+            }
+        }
+
+        function shufflePuzzle() {
+            const pieces = Array.from(piecePool.children);
+
+            // Fisher-Yates shuffle algorithm
+            for (let i = pieces.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                piecePool.appendChild(pieces[j]);
+            }
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timer = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsedTime / 60);
+                const seconds = elapsedTime % 60;
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function checkPuzzleCompletion() {
+            const placedPieces = puzzleGrid.querySelectorAll('.puzzle-piece');
+
+            if (placedPieces.length === puzzleSize * puzzleSize) {
+                const allInCorrectPosition = Array.from(placedPieces).every(piece => {
+                    const dropZone = piece.parentElement;
+                    const expectedX = parseInt(dropZone.style.left);
+                    const expectedY = parseInt(dropZone.style.top);
+                    const currentPiece = puzzlePieces.find(p => p.id === parseInt(piece.dataset.id));
+
+                    return currentPiece && currentPiece.correctX === expectedX && currentPiece.correctY === expectedY;
+                });
+
+                if (allInCorrectPosition) {
+                    clearInterval(timer);
+
+                    // Automatically progress to next level
+                    currentLevel++;
+
+                    // If more levels exist, show win modal with 'Next Puzzle' option
+                    if (currentLevel < puzzleConfig.length) {
+                        const modalContent = winModal.querySelector('.modal-content');
+                        modalContent.innerHTML = `
+                    <h2>Congratulations!</h2>
+                    <p>You've solved the puzzle!</p>
+                    <button id="next-puzzle-btn" class="btn">Next Puzzle</button>
+                `;
+
+                        const nextPuzzleBtn = modalContent.querySelector('#next-puzzle-btn');
+                        nextPuzzleBtn.addEventListener('click', () => {
+                            winModal.style.display = 'none';
+                            initializeGame();
+                        });
+
+                        winModal.style.display = 'flex';
+                    }
+                }
+            }
+        }
+
+        function displayConstitutionFact() {
+            constitutionFact.textContent = puzzleConfig[currentLevel].fact;
+        }
+
+        function resetGame() {
+            clearInterval(timer);
+            initializeGame();
+        }
+
+        // Remove level selector from the DOM
+        levelSelector.remove();
+
+        // Event Listeners
+        shuffleBtn.addEventListener('click', shufflePuzzle);
+        resetBtn.addEventListener('click', resetGame);
+
+        // Initialize the first level
+        initializeGame();
+    </script>
+</body>
+
+</html>
