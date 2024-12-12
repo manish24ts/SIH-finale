@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constitution Quest</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* Styling for the body of the page */
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background: url(https://i.pinimg.com/originals/1e/31/3a/1e313a58c726ed08e116c1607dfe3875.gif);
+            background-size: cover;
+            color: white;
+        }
+
+        /* Container for game content */
+        .game-container {
+            text-align: center;
+            margin-top: 50px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px auto;
+            backdrop-filter: blur(5px);
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Styling for headings */
+        h1, h2 {
+            color: #ffcc00;
+            text-shadow: 0 0 10px #ffcc00, 0 0 20px #ff9900;
+        }
+
+        /* Styling for hint and submit buttons */
+        #hintButton {
+            background-color: #6c5e6f; /* Bright yellow */
+            color: rgb(248, 248, 248);
+            border: 2px solid #af7fc4;
+            box-shadow: 0 0 5px #3d2f41;
+            transition: background-color 0.3s ease;
+        }
+
+        #hintButton:hover {
+            background-color: #343034; /* Slightly darker yellow on hover */
+        }
+
+        #submitAnswer {
+            background-color: #453c49; /* Green */
+            color: white;
+            border: 2px solid #b378c5;
+            box-shadow: 0 0 5px #503854;
+            transition: background-color 0.3s ease;
+        }
+
+        #submitAnswer:hover {
+            background-color: #423744; /* Darker green on hover */
+        }
+
+        /* Styling for text and paragraphs */
+        p {
+            color: #fff;
+            text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Styling for buttons and input fields */
+        button, input {
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            outline: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin: 10px;
+        }
+
+        /* Button for starting the game */
+        #startGame {
+            background-color: #261d2b;
+            color: white;
+            box-shadow: 0 0 10px #d9e1ef;
+        }
+
+        /* Styling for text input fields */
+        input[type="text"] {
+            background: rgba(255, 255, 253, 0.8);
+            border: 2px solid #212321;
+            color: black;
+            font-weight: bold;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Styling for images */
+        img {
+            width: 850px;
+            max-width: 350px;
+            border: 3px solid #fff;
+            border-radius: 10px;
+            margin: 20px auto;
+        }
+
+        /* Welcome section styling */
+        #welcome h1 {
+            font-size: 36px; /* Make the heading larger */
+            text-align: center; /* Center-align the heading */
+            margin-bottom: 20px; /* Add space below the heading */
+            color: #ffcc00; /* Bright color to highlight the heading */
+            text-shadow: 0 0 10px #ffcc00, 0 0 20px #ff9900; /* Add glow effect */
+        }
+
+        #welcome h2 {
+            font-size: 20px; /* Make the heading larger */
+            text-align: center; /* Center-align the heading */
+            margin-bottom: 20px; /* Add space below the heading */
+            color: #fefcf7; /* Bright color to highlight the heading */
+            text-shadow: 0 0 10px #ffcc00, 0 0 20px #ff9900; /* Add glow effect */
+        }
+
+        #welcome p {
+            font-size: 10px; /* Reduce font size of instructions */
+            line-height: 1.8; /* Adjust line height for readability */
+            margin: 0 auto; /* Center the instructions */
+            color: #ffffff; /* Ensure readability against the background */
+            max-width: 600px; /* Limit width for a clean layout */
+            text-align: center; /* Center-align the instructions */
+        }
+
+        /* Hides elements that are not currently in use */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Background Sound (Plays continuously) -->
+<audio id="backgroundAudio" loop autoplay>
+    <source src="backgroundsound.mp3" type="audio/mp3">
+</audio>
+
+<!-- Starting Sound (Plays on user interaction to bypass autoplay restrictions) -->
+<audio id="startingAudio">
+    <source src="startingsound.mp3" type="audio/mp3">
+    Your browser does not support the audio tag.
+</audio>
+
+<!-- Countdown Sound -->
+<audio id="game321Audio">
+    <source src="game321.mp3" type="audio/mp3">
+</audio>
+
+<div class="container game-container">
+    <!-- Welcome Screen -->
+    <div id="welcome">
+        <h1>Welcome to Constitution Quest!</h1>
+        <h2>Instructions:</h2><p><br>✦ Enter your name and click Start Game to begin.<br>
+            ✦ Guess the word based on the displayed image to progress through levels.<br>
+            <br>✦ Each correct answer earns 25 points; incorrect answers end the game.<br>
+            ✦ Use hints to reveal the first letter at the cost of 10 points.<br>
+            ✦ Complete all levels to win; otherwise, restart and try again.</p>
+        <h2>Please enter your name to start the game:</h2>
+        <input type="text" id="playerName" placeholder="Enter your name" class="form-control">
+        <button id="startGame" class="btn">Start Game</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game" class="hidden">
+        <h2 id="levelTitle">Level 1</h2>
+        <p>Player: <span id="playerDisplayName"></span> | Score: <span id="score">0</span></p>
+        <img id="wordImage" src="level1.png" alt="Level Image" class="img-fluid">
+        <div id="hintContainer">
+            <button id="hintButton" class="btn btn-warning">Hint</button>
+            <div id="hint" class="hidden"></div>
+        </div>
+        <input type="text" id="answerInput" placeholder="Enter your answer" class="form-control mb-3">
+        <button id="submitAnswer" class="btn btn-success">Submit Answer</button>
+        <div id="result" class="hidden"></div>
+        <button id="startAgain" class="hidden btn btn-secondary">Start Again</button>
+    </div>
+</div>
+
+<!-- Sounds for button clicks, win, lose -->
+<audio id="clickSound">
+    <source src="button-click.mp3" type="audio/mp3">
+</audio>
+<audio id="winSound">
+    <source src="win.mp3" type="audio/mp3">
+</audio>
+<audio id="loseSound">
+    <source src="losegame.mp3" type="audio/mp3">
+</audio>
+
+<script>
+    let score = 0;
+    let level = 1;
+    const words = [
+        { name: "legislative", image: "level1.png" },
+        { name: "constitution", image: "level2.png" },
+        { name: "freedom", image: "level3.png" },
+        { name: "democracy", image: "level4.png" },
+        { name: "fundamental", image: "level5.png" },
+        { name: "amendment", image: "level6.png" },
+        { name: "discrimination", image: "level7.png" },
+        { name: "republic", image: "level8.png" },
+        { name: "independent", image: "level9.png" },
+        { name: "preamble", image: "level10.png" }
+    ];
+
+    // Audio elements
+    const backgroundAudio = document.getElementById("backgroundAudio");
+    const startingAudio = document.getElementById("startingAudio");
+    const clickSound = document.getElementById("clickSound");
+    const winSound = document.getElementById("winSound");
+    const loseSound = document.getElementById("loseSound");
+    const game321Audio = document.getElementById("game321Audio");
+
+    backgroundAudio.volume = 0.5;
+    startingAudio.volume = 0.5;
+
+    // Play the starting sound when user clicks anywhere on the page
+    document.body.onclick = function () {
+        startingAudio.play();  // Play the starting sound
+        document.body.onclick = null;  // Disable further clicks to avoid multiple plays
+    };
+
+    // Start the game when the player clicks the Start Game button
+    document.getElementById('startGame').onclick = function () {
+        const playerName = document.getElementById('playerName').value.trim();
+        if (playerName === "") {
+            alert("Please enter your name to start the game.");
+            return;
+        }
+
+        // Play the countdown sound and show the countdown
+        game321Audio.play();
+        let countdown = 3;
+        const countdownElement = document.createElement("p");
+        countdownElement.id = "countdown";
+        countdownElement.style.fontSize = "50px";
+        countdownElement.style.color = "#ffcc00";
+        document.getElementById("welcome").appendChild(countdownElement);
+
+        const interval = setInterval(function () {
+            countdownElement.innerText = countdown;
+            countdown--;
+            if (countdown < 0) {
+                clearInterval(interval);
+                document.getElementById("countdown").remove();  // Remove countdown text
+                startGame(playerName);
+            }
+        }, 1000);
+    };
+
+    function startGame(playerName) {
+        // Stop starting sound when the game starts
+        startingAudio.pause();
+        startingAudio.currentTime = 0; // Reset to the beginning
+
+        document.getElementById('playerDisplayName').innerText = playerName;
+        clickSound.play();
+        document.getElementById('welcome').classList.add('hidden');
+        document.getElementById('game').classList.remove('hidden');
+
+        // Play the background sound
+        backgroundAudio.play();
+        loadLevel();
+    }
+
+    function loadLevel() {
+        document.getElementById('levelTitle').innerText = `Level ${level}`;
+        document.getElementById('wordImage').src = words[level - 1].image;
+        document.getElementById('score').innerText = score;
+        document.getElementById('hint').classList.add('hidden');
+        document.getElementById('result').classList.add('hidden');
+        document.getElementById('startAgain').classList.add('hidden');
+        document.getElementById('answerInput').value = '';
+        document.getElementById('answerInput').classList.remove('hidden');
+        document.getElementById('submitAnswer').classList.remove('hidden');
+    }
+
+    // Hint button
+    document.getElementById('hintButton').onclick = function () {
+        clickSound.play();
+        if (confirm("Using a hint will cost you -10 points. Do you want to continue?")) {
+            score -= 10;
+            document.getElementById('score').innerText = score;
+            document.getElementById('hint').innerText = `The word starts with: ${words[level - 1].name.charAt(0)}`;
+            document.getElementById('hint').classList.remove('hidden');
+        }
+    };
+
+    // Submit answer button
+    document.getElementById('submitAnswer').onclick = function () {
+        const answer = document.getElementById('answerInput').value.trim().toLowerCase();
+        if (answer === "") {
+            alert("Please enter an answer before submitting!");
+            return;
+        }
+        if (answer === words[level - 1].name) {
+            winSound.play();
+            score += 25;
+            level++;
+            if (level > words.length) {
+                alert("Congratulations! You've completed all levels!");
+                resetGame();
+            } else {
+                loadLevel();
+            }
+        } else {
+            loseSound.play();
+            document.getElementById('result').innerText = `Game Over! The correct word was: ${words[level - 1].name}`;
+            document.getElementById('result').classList.remove('hidden');
+            document.getElementById('answerInput').classList.add('hidden');
+            document.getElementById('submitAnswer').classList.add('hidden');
+            document.getElementById('startAgain').classList.remove('hidden');
+        }
+    };
+
+    document.getElementById('startAgain').onclick = function () {
+        resetGame();
+        document.getElementById('game').classList.add('hidden');
+        document.getElementById('welcome').classList.remove('hidden');
+    };
+
+    function resetGame() {
+        score = 0;
+        level = 1;
+        document.getElementById('score').innerText = score;
+        document.getElementById('answerInput').value = '';
+        document.getElementById('hint').classList.add('hidden');
+        document.getElementById('result').classList.add('hidden');
+        document.getElementById('submitAnswer').classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
